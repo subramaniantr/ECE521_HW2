@@ -47,41 +47,51 @@ int numVsrc;
     }
 }
 
-void setupVsrc(Vsrc, numVsrc)
+void setupVsrc(Matrix, Rhs, Vsrc, numVsrc)
+char *Matrix;
+double *Rhs;
 vsource *Vsrc[];
 int numVsrc;
 {
-    int i;
+    int i, n1,n2,b1;
     vsource *inst;
 
     /* do any preprocessing steps here */
     for(i = 1; i <= numVsrc; i++) {
 	inst = Vsrc[i];
 	inst->branchNum += NumNodes;
+	n1 = inst->pNode;
+	n2 = inst->nNode;
+        b1 = inst->branchNum;
+	/* setup matrix and pointers */
+	inst->pn1b1 = spGetElement(Matrix, n1, b1);
+	inst->pn2b1 = spGetElement(Matrix, n2, b1);
+	inst->pb1n1 = spGetElement(Matrix, b1, n1);
+	inst->pb1n2 = spGetElement(Matrix, b1, n2);
+	inst->prhsb1 = Rhs+b1 ;
+        
     }
 }
 
-void stampVsrc(Vsrc, numVsrc, cktMatrix, Rhs)
+void loadVsrc(Matrix, Rhs, Vsrc, numVsrc)
+char *Matrix;
+double *Rhs;
 vsource *Vsrc[];
 int numVsrc;
-double **cktMatrix;
-double *Rhs;
 {
-    int i, pNode, nNode, branchNum;
+    int i;
     vsource *inst;
     double voltage;
 	
     /* stamp voltage source*/
     for(i = 1; i <= numVsrc; i++) {
 	inst = Vsrc[i];
-	pNode = inst->pNode;
-	nNode = inst->nNode;
-	branchNum = inst->branchNum;
 	voltage = inst->voltage;
- 	cktMatrix[pNode][branchNum] += 1;
- 	cktMatrix[nNode][branchNum] -= 1;
- 	cktMatrix[branchNum][pNode] += 1;
- 	cktMatrix[branchNum][nNode] -= 1;
-	Rhs[branchNum] += voltage;
+
+	*(inst->pn1b1) += 1; 
+	*(inst->pn2b1) -= 1; 
+	*(inst->pb1n1) += 1; 
+	*(inst->pb1n2) -= 1; 
+	*(inst->prhsb1) += voltage;
     }
 }

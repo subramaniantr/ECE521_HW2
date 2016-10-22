@@ -42,8 +42,9 @@ int numIsrc;
     }
 }
 
-void setupIsrc(Matrix, Isrc, numIsrc)
+void setupIsrc(Matrix, Rhs, Isrc, numIsrc)
 char *Matrix;
+double *Rhs;
 isource *Isrc[];
 int numIsrc;
 {
@@ -68,12 +69,14 @@ isource *Isrc[];
 int numIsrc;
 {
     int i ;
+    isource *inst;
     double current;
 
     /* stamp current source*/
     for(i = 1; i <= numIsrc; i++) {
 	inst = Isrc[i];
 	current = Isrc[i]->current;
+
 	*(inst->prhsn1) -= current;
 	*(inst->prhsn2) += current;
     }

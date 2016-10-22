@@ -143,9 +143,14 @@ char **av;
 
     /* do any preprocessing */
     setupRes(cktMatrix, Res, numRes);
+    setupIsrc(cktMatrix,Rhs, Isrc, numIsrc);
+    setupVsrc(cktMatrix,Rhs, Vsrc, numVsrc);
+
 
     /* load circuit matrix */
     loadRes(cktMatrix, Rhs, Res, numRes);
+    loadIsrc(cktMatrix, Rhs, Isrc, numIsrc);
+    loadVsrc(cktMatrix, Rhs, Vsrc, numVsrc);
 
     /* print circuit matrix */
     printf("\n");

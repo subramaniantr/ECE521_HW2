@@ -6,11 +6,11 @@ typedef struct vsource{
     int nNode; /* number of negative node of vsource */
     int branchNum ; /* number of branch */
     double voltage;  /* value of vsource */
-    double *pbn1;     /*pointer to sparse-matrix location (pNode, pNode)*/
-    double *pbn2;     /*pointer to sparse-matrix location (pNode, nNode)*/
-    double *pn2b;     /*pointer to sparse-matrix location (nNode, nNode)*/
-    double *pn1b;     /*pointer to sparse-matrix location (nNode, pNode)*/
-    double *prhsb;     /*pointer to sparse-matrix location (nNode, pNode)*/
+    double *pn1b1;     /*pointer to sparse-matrix location (nNode, pNode)*/
+    double *pn2b1;     /*pointer to sparse-matrix location (nNode, nNode)*/
+    double *pb1n1;     /*pointer to sparse-matrix location (pNode, pNode)*/
+    double *pb1n2;     /*pointer to sparse-matrix location (pNode, nNode)*/
+    double *prhsb1;     /*pointer to sparse-matrix location (nNode, pNode)*/
     
 } vsource ;
 
