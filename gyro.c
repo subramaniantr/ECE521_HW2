@@ -44,7 +44,7 @@ int numGyro;
     gyrator *inst;
     for(i = 1; i <= numGyro; i++) {
 	inst = Gyro[i];
-	printf("%s\t%s\t%s\t%s\t%s\t%f\n", inst->name, NodeArray[inst->p2Node], NodeArray[inst->n2Node], NodeArray[inst->p1Node], NodeArray[inst->n1Node], inst->g);
+	printf("%s\t%s\t%s\t%s\t%s\t%f\n", inst->name, NodeArray[inst->pCNode], NodeArray[inst->nCNode], NodeArray[inst->pNode], NodeArray[inst->nNode], inst->g);
     }
 }
 
@@ -84,6 +84,7 @@ gyrator *Gyro[];
 int numGyro;
 {
     int i;
+    gyrator *inst;
     double g ;
     /* stamp T source*/
     for(i = 1; i <= numGyro; i++) {

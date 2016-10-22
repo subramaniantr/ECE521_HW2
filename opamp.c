@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "opamp.h"
+#include "sparse/spMatrix.h"
 
 void makeOp(Op, numOp, buf)
 opamp *Op[];
@@ -47,11 +48,12 @@ int numOp;
     }
 }
 
-void setupOp(Op, numOp)
+void setupOp(Matrix,Op, numOp)
+char *Matrix;
 opamp *Op[];
 int numOp;
 {
-    int i;
+    int i, p, n, o, b;
     opamp *inst;
 
     /* do any preprocessing steps here */
@@ -59,29 +61,35 @@ int numOp;
     for(i = 1; i <= numOp; i++) {
 	inst = Op[i];
 	inst->branchNum += NumNodes;
+        p = inst->pNode;
+        n = inst->nNode;
+        o = inst->oNode ;
+        b = inst->branchNum;
+	/* setup matrix and pointers */
+	inst->pbp  = spGetElement(Matrix, b, p);
+	inst->pbn  = spGetElement(Matrix, b, n);
+	inst->pbo   = spGetElement(Matrix,b, o);
+	inst->pob   = spGetElement(Matrix, o, b);
     }
 }
 
-void stampOp(Op, numOp, cktMatrix, Rhs)
+void loadOp(Matrix, Rhs, Op, numOp)
+char *Matrix;
+double *Rhs;
 opamp *Op[];
 int numOp;
-double **cktMatrix;
-double *Rhs;
 {
-    int i, pNode, nNode, oNode, branchNum;
+    int i;
     double A ;
+    opamp *inst;
     /* stamp N source*/
     for(i = 1; i <= numOp; i++) {
-	pNode = Op[i]->pNode;
-	nNode = Op[i]->nNode;
-	oNode = Op[i]->oNode;
         A     = Op[i]->A;
-	branchNum = Op[i]->branchNum;
         //KCL for output Node
- 	cktMatrix[oNode][branchNum] += 1;
-        //BCE for Opamp : A(Vp-Vn)+ Vo=0
- 	cktMatrix[branchNum][pNode] += A;
- 	cktMatrix[branchNum][nNode] -= A;
- 	cktMatrix[branchNum][oNode] += 1;
+ 	*(inst->pob) += 1;
+        //BCE for  Opamp : A(Vp-Vn)+ Vo=0
+ 	*(inst->pbp) += A;
+ 	*(inst->pbn) -= A;
+ 	*(inst->pbo) += 1;
     }
 }

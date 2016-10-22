@@ -47,7 +47,7 @@ int numTf;
     transformer *inst;
     for(i = 1; i <= numTf; i++) {
 	inst = Tf[i];
-	printf("%s\t%s\t%s\t%s\t%s\t%f\n", inst->name, NodeArray[inst->p1Node], NodeArray[inst->n1Node], NodeArray[inst->p2Node], NodeArray[inst->n2Node], inst->n);
+	printf("%s\t%s\t%s\t%s\t%s\t%f\n", inst->name, NodeArray[inst->pCNode], NodeArray[inst->nCNode], NodeArray[inst->pNode], NodeArray[inst->nNode], inst->n);
     }
 }
 
@@ -92,7 +92,6 @@ int numTf;
     transformer *inst;
     /* stamp N source*/
     for(i = 1; i <= numTf; i++) {
-	branchNum = Tf[i]->branchNum;
         n   = Tf[i]->n;
         //KCL for p2Node,n2Node,p1Node and n1Node
  	*(inst->ppCb) += 1;

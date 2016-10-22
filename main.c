@@ -8,7 +8,11 @@
 #include "cccs.h"
 #include "vccs.h"
 #include "ccvs.h"
+#include "opamp.h"
+#include "tf.h"
+#include "gyro.h"
 #include "dio.h"
+
 #include "sparse/spMatrix.h"
 
 int NumNodes = 0;
