@@ -13,6 +13,6 @@ typedef struct ccvs{
     double *pbp;     /*pointer to sparse-matrix location (pNode, pNode)*/
     double *pbn;     /*pointer to sparse-matrix location (pNode, nNode)*/
     double *pbpC;     /*pointer to sparse-matrix location (pNode, nNode)*/
-    double *pbnC;     /*pointer to sparse-matrix location (pNode, nNode)*/
+    double *pbbC;     /*pointer to sparse-matrix location (pNode, nNode)*/
 } ccvs ;
 

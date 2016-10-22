@@ -52,7 +52,7 @@ char *Matrix;
 ccvs *Hsrc[];
 int numHsrc;
 {
-    int i;
+    int i, p,n,bC,b;
     ccvs *inst;
 
     /* do any preprocessing steps here */
@@ -75,7 +75,7 @@ int numHsrc;
 
 void loadHsrc(Matrix, Rhs, Hsrc, numHsrc)
 char *Matrix;
-double *rhs;
+double *Rhs;
 ccvs *Hsrc[];
 int numHsrc;
 {
@@ -84,7 +84,7 @@ int numHsrc;
     ccvs *inst;
     /* stamp H source*/
     for(i = 1; i <= numHsrc; i++) {
-        inst = Hrsc[i];
+        inst = Hsrc[i];
         Rt = inst->Rt;
         //KCL for pNode & nNode
  	*(inst->ppb) += 1; //I leaving pNode

@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "tf.h"
+#include "sparse/spMatrix.h"
 
 void makeTf(Tf, numTf, buf)
 transformer *Tf[];
@@ -29,10 +30,10 @@ char *buf;
 
     inst = CALLOC(transformer, 1);
     inst->name = (char *)strdup(name);
-    inst->p2Node = nodeA;
-    inst->n2Node = nodeB;
-    inst->p1Node = nodeC;
-    inst->n1Node = nodeD;
+    inst->pCNode = nodeA;
+    inst->nCNode = nodeB;
+    inst->pNode = nodeC;
+    inst->nNode = nodeD;
     inst->branchNum = branchNum ;
     inst->n = value;
     Tf[numTf] = inst;
@@ -50,11 +51,12 @@ int numTf;
     }
 }
 
-void setupTf(Tf, numTf)
+void setupTf(Matrix, Tf, numTf)
+char *Matrix;
 transformer *Tf[];
 int numTf;
 {
-    int i;
+    int i,p,n,pC,nC,b;
     transformer *inst;
 
     /* do any preprocessing steps here */
@@ -62,34 +64,45 @@ int numTf;
     for(i = 1; i <= numTf; i++) {
 	inst = Tf[i];
 	inst->branchNum += NumNodes;
+        b  = inst->branchNum;
+        p  = inst->pNode;
+        n  = inst->nNode;
+        pC = inst->pCNode;
+        nC = inst->nCNode;
+	/* setup matrix and pointers */
+	inst->ppCb  = spGetElement(Matrix, pC, b);
+	inst->pnCb  = spGetElement(Matrix, nC, b);
+	inst->ppb   = spGetElement(Matrix, p, b);
+	inst->pnb   = spGetElement(Matrix, n, b);
+	inst->pbpC  = spGetElement(Matrix, b, pC);
+	inst->pbnC  = spGetElement(Matrix, b, nC);
+	inst->pbp   = spGetElement(Matrix, b, p);
+	inst->pbn   = spGetElement(Matrix, b, n);
     }
 }
 
-void stampTf(Tf, numTf, cktMatrix, Rhs)
+void loadTf(Matrix, Rhs, Tf, numTf)
+char *Matrix;
+double *Rhs;
 transformer *Tf[];
 int numTf;
-double **cktMatrix;
-double *Rhs;
 {
-    int i, p2Node, n2Node, p1Node, n1Node, branchNum;
+    int i;
     double n ;
+    transformer *inst;
     /* stamp N source*/
     for(i = 1; i <= numTf; i++) {
-	p2Node = Tf[i]->p2Node;
-	n2Node = Tf[i]->n2Node;
-	p1Node = Tf[i]->p1Node;
-	n1Node = Tf[i]->n1Node;
 	branchNum = Tf[i]->branchNum;
         n   = Tf[i]->n;
         //KCL for p2Node,n2Node,p1Node and n1Node
- 	cktMatrix[p1Node][branchNum] += 1;
- 	cktMatrix[n1Node][branchNum] -= 1;
- 	cktMatrix[p2Node][branchNum] -= n; 
- 	cktMatrix[n2Node][branchNum] += n;
+ 	*(inst->ppCb) += 1;
+ 	*(inst->pnCb) -= 1;
+ 	*(inst->ppb) -= n; 
+ 	*(inst->pnb) += n;
         //BCE for Transformer : (V1p-V1n)-n*(V2p-V2n)=0
- 	cktMatrix[branchNum][p1Node] += 1;
- 	cktMatrix[branchNum][n1Node] -= 1;
- 	cktMatrix[branchNum][p2Node] -= n;
- 	cktMatrix[branchNum][n2Node] += n;
+ 	*(inst->pbpC) += 1;
+ 	*(inst->pbnC) -= 1;
+ 	*(inst->pbp) -= n;
+ 	*(inst->pbn) += n;
     }
 }
