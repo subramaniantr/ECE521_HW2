@@ -7,6 +7,7 @@ typedef struct resistor{
 
     double value;  /* resistance */
     double conduct;  /* conductance */
+
     double *pn1n1;     /*pointer to sparse-matrix location (pNode, pNode)*/
     double *pn1n2;     /*pointer to sparse-matrix location (pNode, nNode)*/
     double *pn2n2;     /*pointer to sparse-matrix location (nNode, nNode)*/

@@ -53,22 +53,22 @@ double *Rhs;
 vsource *Vsrc[];
 int numVsrc;
 {
-    int i, n1,n2,b1;
+    int i, p,n,b;
     vsource *inst;
 
     /* do any preprocessing steps here */
     for(i = 1; i <= numVsrc; i++) {
 	inst = Vsrc[i];
 	inst->branchNum += NumNodes;
-	n1 = inst->pNode;
-	n2 = inst->nNode;
-        b1 = inst->branchNum;
+	p = inst->pNode;
+	n = inst->nNode;
+        b = inst->branchNum;
 	/* setup matrix and pointers */
-	inst->pn1b1 = spGetElement(Matrix, n1, b1);
-	inst->pn2b1 = spGetElement(Matrix, n2, b1);
-	inst->pb1n1 = spGetElement(Matrix, b1, n1);
-	inst->pb1n2 = spGetElement(Matrix, b1, n2);
-	inst->prhsb1 = Rhs+b1 ;
+	inst->ppb = spGetElement(Matrix, p, b);
+	inst->pnb = spGetElement(Matrix, n, b);
+	inst->pbp = spGetElement(Matrix, b, p);
+	inst->pbn = spGetElement(Matrix, b, n);
+	inst->prhsb = Rhs+b ;
         
     }
 }
@@ -88,10 +88,10 @@ int numVsrc;
 	inst = Vsrc[i];
 	voltage = inst->voltage;
 
-	*(inst->pn1b1) += 1; 
-	*(inst->pn2b1) -= 1; 
-	*(inst->pb1n1) += 1; 
-	*(inst->pb1n2) -= 1; 
-	*(inst->prhsb1) += voltage;
+	*(inst->ppb) += 1; 
+	*(inst->pnb) -= 1; 
+	*(inst->pbp) += 1; 
+	*(inst->pbn) -= 1; 
+	*(inst->prhsb) += voltage;
     }
 }

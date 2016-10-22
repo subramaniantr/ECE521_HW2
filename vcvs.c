@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "vcvs.h"
+#include "sparse/spMatrix.h"
 
 void makeEsrc(Esrc, numEsrc, buf)
 vcvs *Esrc[];
@@ -49,11 +50,12 @@ int numEsrc;
     }
 }
 
-void setupEsrc(Esrc, numEsrc)
+void setupEsrc(Matrix, Esrc, numEsrc)
+char *Matrix;
 vcvs *Esrc[];
 int numEsrc;
 {
-    int i;
+    int i,p,n,pC,nC,b;
     vcvs *inst;
 
     /* do any preprocessing steps here */
@@ -61,32 +63,42 @@ int numEsrc;
     for(i = 1; i <= numEsrc; i++) {
 	inst = Esrc[i];
 	inst->branchNum += NumNodes;
+        b = inst->branchNum;
+        p = inst->pNode;
+        n = inst->nNode;
+        pC = inst->pCNode;
+        nC = inst->nCNode;
+	/* setup matrix and pointers */
+	inst->ppb  = spGetElement(Matrix, p, b);
+	inst->pnb  = spGetElement(Matrix, n, b);
+	inst->pbp  = spGetElement(Matrix, b, p);
+	inst->pbn  = spGetElement(Matrix, b, n);
+	inst->pbpC = spGetElement(Matrix, b, pC);
+	inst->pbnC = spGetElement(Matrix, b, nC);
     }
 }
 
-void stampEsrc(Esrc, numEsrc, cktMatrix, Rhs)
+void loadEsrc(Matrix, Rhs, Esrc, numEsrc)
+char *Matrix;
+double *Rhs;
 vcvs *Esrc[];
 int numEsrc;
-double **cktMatrix;
-double *Rhs;
 {
     int i, pNode, nNode, pCNode, nCNode, branchNum;
     double gain ;
+    vcvs *inst;
     /* stamp E source*/
     for(i = 1; i <= numEsrc; i++) {
-	pNode = Esrc[i]->pNode;
-	nNode = Esrc[i]->nNode;
-	pCNode = Esrc[i]->pCNode;
-	nCNode = Esrc[i]->nCNode;
-	branchNum = Esrc[i]->branchNum;
+        inst = Esrc[i];
         gain   = Esrc[i]->gain;
+        
         //KCL for pNode & nNode
- 	cktMatrix[pNode][branchNum] += 1; //I leaving pNode
- 	cktMatrix[nNode][branchNum] -= 1;
+ 	*(inst->ppb) += 1; //I leaving pNode
+ 	*(inst->pnb) -= 1;
         //BCE for VCVS : Vp-Vn-gain*(Vpc-Vnc)=0
- 	cktMatrix[branchNum][pNode] += 1;
- 	cktMatrix[branchNum][nNode] -= 1;
- 	cktMatrix[branchNum][pCNode] -= gain;
- 	cktMatrix[branchNum][nCNode] += gain;
+ 	*(inst->pbp)  += 1;
+ 	*(inst->pbn)  -= 1;
+ 	*(inst->pbpC) -= gain;
+ 	*(inst->pbnC) += gain;
     }
 }

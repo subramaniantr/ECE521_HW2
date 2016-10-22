@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "vccs.h"
+#include "sparse/spMatrix.h"
 
 void makeGsrc(Gsrc, numGsrc, buf)
 vccs *Gsrc[];
@@ -47,36 +48,45 @@ int numGsrc;
     }
 }
 
-void setupGsrc(Gsrc, numGsrc)
+void setupGsrc(Matrix, Gsrc, numGsrc)
+char *Matrix;
 vccs *Gsrc[];
 int numGsrc;
 {
-    int i;
+    int i, p,n,pC,nC;
     vccs *inst;
 
     /* do any preprocessing steps here */
     for(i = 1; i <= numGsrc; i++) {
+    inst = Gsrc[i];
+    p  = inst->pNode;
+    n  = inst->nNode;
+    pC = inst->pCNode;
+    nC = inst->nCNode;
+	/* setup matrix and pointers */
+	inst->pppC = spGetElement(Matrix, p, pC);
+	inst->ppnC = spGetElement(Matrix, p, nC);
+	inst->pnpC = spGetElement(Matrix, n, pC);
+	inst->pnnC = spGetElement(Matrix, n, nC);
     }
 }
 
-void stampGsrc(Gsrc, numGsrc, cktMatrix, Rhs)
+void loadGsrc(Matrix, Rhs, Gsrc, numGsrc)
+char *Matrix;
+double *Rhs;
 vccs *Gsrc[];
 int numGsrc;
-double **cktMatrix;
-double *Rhs;
 {
     int i, pNode, nNode, pCNode, nCNode;
     double Gm;
-    /* stamp G source*/
+    vccs *inst;
+    /* load G source*/
     for(i = 1; i <= numGsrc; i++) {
-	pNode = Gsrc[i]->pNode;
-	nNode = Gsrc[i]->nNode;
-	pCNode = Gsrc[i]->pCNode;
-	nCNode = Gsrc[i]->nCNode;
+	inst = Gsrc[i];
 	Gm = Gsrc[i]->Gm;
-	cktMatrix[pNode][pCNode] += Gm;
-	cktMatrix[pNode][nCNode] -= Gm;
-	cktMatrix[nNode][pCNode] -= Gm;
-	cktMatrix[nNode][nCNode] += Gm;
+	*(inst->pppC) += Gm;
+	*(inst->ppnC) -= Gm;
+	*(inst->pnpC) -= Gm;
+	*(inst->pnnC) += Gm;
     }
 }

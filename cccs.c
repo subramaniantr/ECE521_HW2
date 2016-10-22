@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "cccs.h"
+#include "sparse/spMatrix.h"
 
 void makeFsrc(Fsrc, numFsrc, buf)
 cccs *Fsrc[];
@@ -44,36 +45,42 @@ int numFsrc;
     }
 }
 
-void setupFsrc(Fsrc, numFsrc)
+void setupFsrc(Matrix, Fsrc, numFsrc)
+char *Matrix;
 cccs *Fsrc[];
 int numFsrc;
 {
-    int i;
+    int i,p,n,bC;
     cccs *inst;
 
     /* do any preprocessing steps here */
    //Pushing Branch number columns after the Node numbers
     for(i = 1; i <= numFsrc; i++) {
 	inst = Fsrc[i];
-	inst->cbranchNum += NumNodes;
+      	inst->cbranchNum += NumNodes;
+        bC = inst->cbranchNum;
+        p = inst->pNode;
+        n = inst->nNode;
+	inst->ppbC  = spGetElement(Matrix, p, bC);
+	inst->pnbC  = spGetElement(Matrix, n, bC);
     }
 }
 
-void stampFsrc(Fsrc, numFsrc, cktMatrix)
+void loadFsrc(Matrix, Rhs, Fsrc, numFsrc)
+char *Matrix;
 cccs *Fsrc[];
+double *Rhs;
 int numFsrc;
-double **cktMatrix;
 {
-    int i, pNode, nNode, cbranchNum;
+    int i;
     double gain ;
+    cccs *inst;
     /* stamp F source*/
     for(i = 1; i <= numFsrc; i++) {
-     pNode = Fsrc[i]->pNode;
-     nNode = Fsrc[i]->nNode;
-     cbranchNum = Fsrc[i]->cbranchNum;
+     inst = Fsrc[i];
      gain = Fsrc[i]->gain;
      //KCL for pNode & nNode 
-     cktMatrix[pNode][cbranchNum] += gain; //I leaving pNode
-     cktMatrix[nNode][cbranchNum] -= gain;
+     *(inst->ppbC) += gain; //I leaving pNode
+     *(inst->pnbC) -= gain;
     }
 }

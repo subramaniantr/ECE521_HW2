@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "ccvs.h"
+#include "sparse/spMatrix.h"
 
 void makeHsrc(Hsrc, numHsrc, buf)
 ccvs *Hsrc[];
@@ -46,7 +47,8 @@ int numHsrc;
     }
 }
 
-void setupHsrc(Hsrc, numHsrc)
+void setupHsrc(Matrix, Hsrc, numHsrc)
+char *Matrix;
 ccvs *Hsrc[];
 int numHsrc;
 {
@@ -59,32 +61,38 @@ int numHsrc;
 	inst = Hsrc[i];
 	inst->branchNum += NumNodes;
 	inst->cbranchNum += NumNodes;
+	p  = inst->pNode;
+	n  = inst->nNode;
+	bC = inst->cbranchNum;
+	b  = inst->branchNum;
+	inst->ppb  = spGetElement(Matrix, p, b);
+	inst->pnb  = spGetElement(Matrix, n, b);
+	inst->pbp  = spGetElement(Matrix, b, p);
+	inst->pbn  = spGetElement(Matrix, b, n);
+	inst->pbbC  = spGetElement(Matrix, b, bC);
     }
 }
 
-void stampHsrc(Hsrc, numHsrc, cktMatrix, rhs)
+void loadHsrc(Matrix, Rhs, Hsrc, numHsrc)
+char *Matrix;
+double *rhs;
 ccvs *Hsrc[];
 int numHsrc;
-double **cktMatrix;
-double *rhs;
 {
-    int i, pNode, nNode, cbranchNum, branchNum;
+    int i;
     double Rt ;
+    ccvs *inst;
     /* stamp H source*/
     for(i = 1; i <= numHsrc; i++) {
-	pNode      = Hsrc[i]->pNode;
-	nNode      = Hsrc[i]->nNode;
-	cbranchNum = Hsrc[i]->cbranchNum;
-	branchNum  = Hsrc[i]->branchNum;
-        Rt         = Hsrc[i]->Rt;
-
+        inst = Hrsc[i];
+        Rt = inst->Rt;
         //KCL for pNode & nNode
- 	cktMatrix[pNode][branchNum] += 1; //I leaving pNode
- 	cktMatrix[nNode][branchNum] -= 1; //I entering nNode
+ 	*(inst->ppb) += 1; //I leaving pNode
+ 	*(inst->pnb) -= 1; //I entering nNode
         //BCE for the CCVS : Vp-Vn-I*Rt = 0
- 	cktMatrix[branchNum][pNode] += 1;
- 	cktMatrix[branchNum][nNode] -= 1;
- 	cktMatrix[branchNum][cbranchNum] -= Rt;
+ 	*(inst->pbp) += 1;
+ 	*(inst->pbn) -= 1;
+ 	*(inst->pbbC) -= Rt;
     
     }
 }
