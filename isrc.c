@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "isrc.h"
+#include "sparse/spMatrix.h"
 
 void makeIsrc(Isrc, numIsrc, buf)
 isource *Isrc[];
@@ -41,33 +42,39 @@ int numIsrc;
     }
 }
 
-void setupIsrc(Isrc, numIsrc)
+void setupIsrc(Matrix, Isrc, numIsrc)
+char *Matrix;
 isource *Isrc[];
 int numIsrc;
 {
-    int i;
+    int i,n1,n2;
     isource *inst;
 
     /* do any preprocessing steps here */
     for(i = 1; i <= numIsrc; i++) {
+	inst = Isrc[i];
+	n1 = inst->pNode;
+	n2 = inst->nNode;
+	/* setup matrix and pointers */
+	inst->prhsn1 = Rhs+n1;
+	inst->prhsn2 = Rhs+n2;
     }
 }
 
-void stampIsrc(Isrc, numIsrc, cktMatrix, Rhs)
+void loadIsrc(Matrix, Rhs, Isrc, numIsrc)
+char *Matrix;
+double *Rhs;
 isource *Isrc[];
 int numIsrc;
-double **cktMatrix;
-double *Rhs;
 {
-    int i, pNode, nNode;
+    int i ;
     double current;
 
     /* stamp current source*/
     for(i = 1; i <= numIsrc; i++) {
-	pNode = Isrc[i]->pNode;
-	nNode = Isrc[i]->nNode;
+	inst = Isrc[i];
 	current = Isrc[i]->current;
-	Rhs[pNode] -= current;
-	Rhs[nNode] += current;
+	*(inst->prhsn1) -= current;
+	*(inst->prhsn2) += current;
     }
 }

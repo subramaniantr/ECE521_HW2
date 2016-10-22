@@ -6,5 +6,8 @@ typedef struct isource{
     int nNode; /* number of negative node of isource */
 
     double current;  /* value of isource */
+    
+    double *prhsn1;     /*pointer to sparse-matrix location (pNode)*/
+    double *prhsn2;     /*pointer to sparse-matrix location (nNode)*/
 } isource ;
 

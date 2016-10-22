@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "defs.h"
 #include "vsrc.h"
+#include "sparse/spMatrix.h"
 
 void makeVsrc(Vsrc, numVsrc, buf)
 vsource *Vsrc[];
