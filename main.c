@@ -149,17 +149,30 @@ char **av;
     setupRes(cktMatrix, Res, numRes);
     setupIsrc(cktMatrix,Rhs, Isrc, numIsrc);
     setupVsrc(cktMatrix,Rhs, Vsrc, numVsrc);
+    setupEsrc(cktMatrix, Esrc, numEsrc);
+    setupFsrc(cktMatrix, Fsrc, numFsrc);
+    setupGsrc(cktMatrix, Gsrc, numGsrc);
+    setupHsrc(cktMatrix, Hsrc, numHsrc);
 
 
     /* load circuit matrix */
     loadRes(cktMatrix, Rhs, Res, numRes);
     loadIsrc(cktMatrix, Rhs, Isrc, numIsrc);
     loadVsrc(cktMatrix, Rhs, Vsrc, numVsrc);
+    loadEsrc(cktMatrix, Rhs, Esrc, numEsrc);
+    loadFsrc(cktMatrix, Rhs, Fsrc, numFsrc);
+    loadGsrc(cktMatrix, Rhs, Gsrc, numGsrc);
+    loadHsrc(cktMatrix, Rhs, Hsrc, numHsrc);
 
     /* print circuit matrix */
     printf("\n");
     spPrint(cktMatrix, 0, 1, 0);
 
+    /* print Rhs vector */
+    printf("\nRHS\n");
+    for(i = 1; i <= NumNodes+NumBranches; i++) {
+	printf(" %9.3g\n",Rhs[i]);
+    }
     /* compute DC solution */
     /* first Factor the matrix and then Forward/Back solve */
     error = spFactor( cktMatrix );

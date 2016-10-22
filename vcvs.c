@@ -84,7 +84,7 @@ double *Rhs;
 vcvs *Esrc[];
 int numEsrc;
 {
-    int i, pNode, nNode, pCNode, nCNode, branchNum;
+    int i;
     double gain ;
     vcvs *inst;
     /* stamp E source*/
