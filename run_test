@@ -1,0 +1,17 @@
+make clean
+make
+myspice test1.ckt >result1
+myspice test2.ckt >result2
+myspice test3.ckt >result3
+myspice test4.ckt >result4
+myspice test5.ckt >result5
+myspice test6.ckt >result6
+myspice test7.ckt >result7
+myspice teste.ckt >resulte
+myspice testf.ckt >resultf
+myspice testg.ckt >resultg
+myspice testh.ckt >resulth
+myspice testn.ckt >resultn
+myspice testo.ckt >resulto
+myspice testt.ckt >resultt
+clear

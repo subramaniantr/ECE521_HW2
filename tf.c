@@ -92,6 +92,7 @@ int numTf;
     transformer *inst;
     /* stamp N source*/
     for(i = 1; i <= numTf; i++) {
+        inst = Tf[i];
         n   = Tf[i]->n;
         //KCL for p2Node,n2Node,p1Node and n1Node
  	*(inst->ppCb) += 1;

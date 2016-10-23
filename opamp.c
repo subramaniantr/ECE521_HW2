@@ -28,9 +28,9 @@ char *buf;
 
     inst = CALLOC(opamp, 1);
     inst->name = (char *)strdup(name);
-    inst->oNode = nodeA;
-    inst->pNode = nodeB;
-    inst->nNode = nodeC;
+    inst->pNode = nodeA;
+    inst->nNode = nodeB;
+    inst->oNode = nodeC;
     inst->branchNum = branchNum ;
     inst->A = value;
     Op[numOp] = inst;
@@ -84,7 +84,8 @@ int numOp;
     opamp *inst;
     /* stamp N source*/
     for(i = 1; i <= numOp; i++) {
-        A     = Op[i]->A;
+        inst = Op[i];
+        A    = Op[i]->A;
         //KCL for output Node
  	*(inst->pob) += 1;
         //BCE for  Opamp : A(Vp-Vn)+ Vo=0

@@ -34,6 +34,9 @@ char **av;
     vccs	*Gsrc[MAXELEM];
     ccvs	*Hsrc[MAXELEM];
     diode    	*Dio[MAXELEM]; 
+    transformer  *Tf[MAXELEM]; 
+    gyrator    *Gyro[MAXELEM]; 
+    opamp      *Op[MAXELEM]; 
     int i = 0;
     int j = 0;
     int numRes = 0;
@@ -44,6 +47,9 @@ char **av;
     int numGsrc = 0;
     int numHsrc = 0;
     int numDio = 0;
+    int numTf = 0;
+    int numGyro = 0;
+    int numOp = 0;
     int numEqns;
     char *cktMatrix;
     double *Rhs, *Sol;
@@ -121,6 +127,24 @@ char **av;
 	numDio++;
 	    makeDio(Dio, numDio, buf);
 	}
+	else if(tolower(buf[0]) == 'n') 
+	{
+	    /* transformer */
+	numTf++;
+	    makeTf(Tf, numTf, buf);
+	}
+	else if(tolower(buf[0]) == 't') 
+	{
+	    /* gyrator */
+	numGyro++;
+	    makeGyro(Gyro, numGyro, buf);
+	}
+	else if(tolower(buf[0]) == 'o') 
+	{
+	    /* opamp */
+	numOp++;
+	    makeOp(Op, numOp, buf);
+	}
     }
     fclose( fpIn );
 
@@ -133,6 +157,9 @@ char **av;
     printGsrc(Gsrc, numGsrc); 
     printHsrc(Hsrc, numHsrc); 
     printDio(Dio, numDio);
+    printTf(Tf, numTf);
+    printGyro(Gyro, numGyro);
+    printOp(Op, numOp);
 
     /* setup circuit matrix */
     numEqns = NumNodes+NumBranches;
@@ -153,6 +180,9 @@ char **av;
     setupFsrc(cktMatrix, Fsrc, numFsrc);
     setupGsrc(cktMatrix, Gsrc, numGsrc);
     setupHsrc(cktMatrix, Hsrc, numHsrc);
+    setupTf(cktMatrix, Tf, numTf);
+    setupGyro(cktMatrix, Gyro, numGyro);
+    setupOp(cktMatrix, Op, numOp);
 
 
     /* load circuit matrix */
@@ -163,6 +193,9 @@ char **av;
     loadFsrc(cktMatrix, Rhs, Fsrc, numFsrc);
     loadGsrc(cktMatrix, Rhs, Gsrc, numGsrc);
     loadHsrc(cktMatrix, Rhs, Hsrc, numHsrc);
+    loadTf(cktMatrix, Rhs, Tf, numTf);
+    loadGyro(cktMatrix, Rhs, Gyro, numGyro);
+    loadOp(cktMatrix, Rhs, Op, numOp);
 
     /* print circuit matrix */
     printf("\n");

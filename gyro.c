@@ -88,7 +88,8 @@ int numGyro;
     double g ;
     /* stamp T source*/
     for(i = 1; i <= numGyro; i++) {
-        g      = Gyro[i]->g;
+        inst = Gyro[i];
+        g    = Gyro[i]->g;
         //KCL for p2Node,n2Node,p1Node and n1Node
  	*(inst->ppCp) -= g; 
  	*(inst->ppCn) += g;
