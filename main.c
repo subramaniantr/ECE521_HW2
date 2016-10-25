@@ -20,6 +20,17 @@ int NumBranches = 0;
 char **NodeArray;
 char **BranchArray;
 
+double maximum(double a, double b)
+{
+   if(a > b)
+   return a;
+   else 
+   return b;
+
+}
+
+
+
 main(ac, av)
 char **av;
 {
@@ -52,10 +63,11 @@ char **av;
     int numOp = 0;
     int numEqns;
     char *cktMatrix;
-    double *Rhs, *Sol;
+    double *Rhs, *Sol, *Sol_old;
     BOOLEAN foundError();
     int error;
-
+    double norm_dx, norm_Sol_old, norm_Sol, Ea, Er;
+    int iter_counter;
     switch (ac) {
         case 2:
             inFile = av[1];
@@ -171,6 +183,7 @@ char **av;
     /* Allocate RHS and Solution vectors */
     Rhs = CALLOC(double, numEqns+1);
     Sol = CALLOC(double, numEqns+1);
+    Sol_old = CALLOC(double, numEqns+1);
 
     /* do any preprocessing */
     setupRes(cktMatrix, Res, numRes);
@@ -183,8 +196,51 @@ char **av;
     setupTf(cktMatrix, Tf, numTf);
     setupGyro(cktMatrix, Gyro, numGyro);
     setupOp(cktMatrix, Op, numOp);
+///////////////////////////////////////////NEWTON LOOP/////////////////////////////////////////////////////////////////////////
+ 
+// Initializing Sol_old = 0
+ 
+   for(i=0;i<numEqns;i++)
+      {
+        Sol_old[i]=0.0;
+        Sol[i]=0.0;
+      }
+// Declaration and Initializing Norm variables as zero
+   
+
+   norm_dx = 100;
+   norm_Sol_old  = 0;
+   norm_Sol = 0;
+   Ea = 1e-6;
+   Er = 1e-3;
+   iter_counter = 0;
+
+while(norm_dx > Ea+Er*maximum(norm_Sol_old,norm_Sol)){
+
+//Clearing the norm values
+   norm_dx = 0;
+   norm_Sol_old  = 0;
+   norm_Sol = 0;
+
+// Assigning Current solution to the Old solution
+ 
+   for(i=0;i<numEqns;i++)
+      {
+        Sol_old[i]=Sol[i];
+      }
+ 
+ // Clearing the Matrix
+ 
+    spClear(cktMatrix);
 
 
+ // Clearing of Rhs
+ 
+   for(i=0;i<numEqns;i++)
+      {
+        Rhs[i]=0;
+      }
+    
     /* load circuit matrix */
     loadRes(cktMatrix, Rhs, Res, numRes);
     loadIsrc(cktMatrix, Rhs, Isrc, numIsrc);
@@ -213,6 +269,26 @@ char **av;
 	exit( -1 );
     }
     spSolve( cktMatrix, Rhs, Sol );
+
+
+//Calculating Norms of Old, Current and Delta Solutions
+
+   
+   
+   for(i=0;i<numEqns;i++)
+      {
+        norm_Sol_old +=  fabs(Sol_old[i]);
+        norm_Sol     +=  fabs(Sol[i]);
+        norm_dx      +=  fabs(Sol_old[i]-Sol[i]);
+      }
+
+     iter_counter++;
+}
+///////////////////////////////////////////END NEWTON LOOP/////////////////////////////////////////////////////////////////////////
+
+
+printf(" Total Number of Iterations= %3d, \n", iter_counter);
+
 
     /* print solution */
     printf("Solution\n");
