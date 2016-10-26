@@ -77,7 +77,7 @@ double *Rhs;
 vccs *Gsrc[];
 int numGsrc;
 {
-    int i, pNode, nNode, pCNode, nCNode;
+    int i;
     double Gm;
     vccs *inst;
     /* load G source*/

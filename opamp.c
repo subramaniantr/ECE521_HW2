@@ -15,8 +15,7 @@ char *buf;
 
     j = 0;	
     j = getNextField(buf, name, j);
-    NumBranches++;
-    branchNum = NumBranches;
+    branchNum = getMappedBranch(name);
     j = getNextField(buf, node, j);
     nodeA = getMappedNode(node);
     j = getNextField(buf, node, j);

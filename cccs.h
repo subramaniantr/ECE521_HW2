@@ -7,7 +7,7 @@ typedef struct cccs{
     int cbranchNum ; /* number of control branch */
     double gain;  /* value of current gain */
 
-    double *ppbC;     /*pointer to sparse-matrix location (pNode, pNode)*/
-    double *pnbC;     /*pointer to sparse-matrix location (pNode, nNode)*/
+    double *ppbC;     
+    double *pnbC;     
 } cccs ;
 

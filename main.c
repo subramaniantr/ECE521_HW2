@@ -67,7 +67,7 @@ char **av;
     BOOLEAN foundError();
     int error;
     double norm_dx, norm_Sol_old, norm_Sol, Ea, Er;
-    int iter_counter;
+    int iter_counter,Fillins;
     switch (ac) {
         case 2:
             inFile = av[1];
@@ -196,7 +196,7 @@ char **av;
     setupTf(cktMatrix, Tf, numTf);
     setupGyro(cktMatrix, Gyro, numGyro);
     setupOp(cktMatrix, Op, numOp);
-///////////////////////////////////////////NEWTON LOOP/////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////NEWTON ALGORITHM/////////////////////////////////////////////////////////////////////////
  
 // Initializing Sol_old = 0
  
@@ -224,10 +224,8 @@ while(norm_dx > Ea+Er*maximum(norm_Sol_old,norm_Sol)){
 
 // Assigning Current solution to the Old solution
  
-   for(i=0;i<numEqns;i++)
-      {
+   for(i=1;i<=numEqns+1;i++)
         Sol_old[i]=Sol[i];
-      }
  
  // Clearing the Matrix
  
@@ -236,10 +234,8 @@ while(norm_dx > Ea+Er*maximum(norm_Sol_old,norm_Sol)){
 
  // Clearing of Rhs
  
-   for(i=0;i<numEqns;i++)
-      {
+   for(i=1;i<=numEqns+1;i++)
         Rhs[i]=0;
-      }
     
     /* load circuit matrix */
     loadRes(cktMatrix, Rhs, Res, numRes);
@@ -259,7 +255,7 @@ while(norm_dx > Ea+Er*maximum(norm_Sol_old,norm_Sol)){
 
     /* print Rhs vector */
     printf("\nRHS\n");
-    for(i = 1; i <= NumNodes+NumBranches; i++) {
+    for(i = 1; i <=NumNodes+NumBranches; i++) {
 	printf(" %9.3g\n",Rhs[i]);
     }
     /* compute DC solution */
@@ -270,19 +266,29 @@ while(norm_dx > Ea+Er*maximum(norm_Sol_old,norm_Sol)){
     }
     spSolve( cktMatrix, Rhs, Sol );
 
+   iter_counter++;
+//Retrieving the number of Fillins in the current 
+    Fillins = spFillinCount(cktMatrix);
+    printf(" Total Number of Fillins in the iteration no %3d is  = %3d, \n",iter_counter, Fillins);
+    
+    
 
 //Calculating Norms of Old, Current and Delta Solutions
 
    
    
-   for(i=0;i<numEqns;i++)
+   for(i=1;i<=numEqns+1;i++)
       {
         norm_Sol_old +=  fabs(Sol_old[i]);
         norm_Sol     +=  fabs(Sol[i]);
         norm_dx      +=  fabs(Sol_old[i]-Sol[i]);
       }
 
-     iter_counter++;
+// Break if iter_counter exceeds 100
+
+   if(iter_counter>100)
+     break;
+
 }
 ///////////////////////////////////////////END NEWTON LOOP/////////////////////////////////////////////////////////////////////////
 

@@ -8,9 +8,9 @@ typedef struct vccs{
     int nCNode; /* number of negative control node of vccs */
     double Gm;  /* value of trans-conductance */
 
-    double *pppC;     /*pointer to sparse-matrix location (pNode, pNode)*/
-    double *ppnC;     /*pointer to sparse-matrix location (pNode, nNode)*/
-    double *pnpC;     /*pointer to sparse-matrix location (nNode, nNode)*/
-    double *pnnC;     /*pointer to sparse-matrix location (nNode, pNode)*/
+    double *pppC;     
+    double *ppnC;     
+    double *pnpC;     
+    double *pnnC;     
 } vccs ;
 

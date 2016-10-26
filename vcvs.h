@@ -9,11 +9,11 @@ typedef struct vcvs{
     int branchNum ; /* number of branch */
     double gain;  /* value of gain */
 
-    double *ppb;     /*pointer to sparse-matrix location (nNode, nNode)*/
-    double *pnb;     /*pointer to sparse-matrix location (nNode, pNode)*/
-    double *pbp;     /*pointer to sparse-matrix location (pNode, pNode)*/
-    double *pbn;     /*pointer to sparse-matrix location (pNode, nNode)*/
-    double *pbpC;     /*pointer to sparse-matrix location (pNode, nNode)*/
-    double *pbnC;     /*pointer to sparse-matrix location (pNode, nNode)*/
+    double *ppb;     
+    double *pnb;     
+    double *pbp;     
+    double *pbn;     
+    double *pbpC;    
+    double *pbnC;    
 } vcvs ;
 

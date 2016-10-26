@@ -1,5 +1,5 @@
 make clean
-make
+make myspice
 myspice test1.ckt >result1
 myspice test2.ckt >result2
 myspice test3.ckt >result3
@@ -14,4 +14,3 @@ myspice testh.ckt >resulth
 myspice testn.ckt >resultn
 myspice testo.ckt >resulto
 myspice testt.ckt >resultt
-clear
